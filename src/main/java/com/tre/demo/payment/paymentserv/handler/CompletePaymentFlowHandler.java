@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -58,6 +57,19 @@ public class CompletePaymentFlowHandler extends RequestFlowHandler {
 	@Autowired
 	SwishPaymentProcessor swishPaymentProcessor;
 	
+	@Autowired
+	PaymentContextToTransactionMapper paymenContextToTransactionMapper;
+	
+	@Autowired
+	PaymentInstructionToTransactionDetailsMapper payemntInstructionToTransactionDetailsMapper;
+	
+	@Autowired
+	TransactionToPaymentContextMapper transactionToPaymentContextMapper;
+	
+	@Autowired
+	PaymentContextToPaymentResponseMapper paymentContextToPaymentResponseMapper;
+	
+	
 	private Transaction transactionRecord;
 	
 	private boolean isPartialPaymentAllowed;
@@ -66,18 +78,14 @@ public class CompletePaymentFlowHandler extends RequestFlowHandler {
 
 
 	@Override
-	public void process() {
+	public void process(){
 		
 		//Check for idempotency
-		
-		
 		List<PaymentContext> paymentContextList = getPaymentContextList();
 		
 		Optional<Transaction> transaction = transactionRepository.findById(paymentContextList.get(0).getPaymentId());
-		PaymentContextToTransactionMapper paymenContextToTransactionMapper = Mappers.getMapper(PaymentContextToTransactionMapper.class);
 		if (transaction.isPresent()) {
 			transactionRecord = transaction.get();
-			TransactionToPaymentContextMapper transactionToPaymentContextMapper = Mappers.getMapper(TransactionToPaymentContextMapper.class);
 			responsePaymentContext = transactionToPaymentContextMapper.mapTransactionToPaymentContext(transactionRecord);
 			return;
 		}
@@ -112,10 +120,7 @@ public class CompletePaymentFlowHandler extends RequestFlowHandler {
 			paymentContextList.set(index, paymentContext);
 		}
 		
-		
 
-		PaymentInstructionToTransactionDetailsMapper payemntInstructionToTransactionDetailsMapper = Mappers.getMapper(PaymentInstructionToTransactionDetailsMapper.class);
-		
 		for (PaymentContext paymentContext : paymentContextList) {
 			TransactionDetails details = payemntInstructionToTransactionDetailsMapper.mapPaymentContextToTransaction(paymentContext.getPaymentInstructionContext());
 			details.setTimeCreated(LocalDateTime.now());
@@ -133,13 +138,12 @@ public class CompletePaymentFlowHandler extends RequestFlowHandler {
 		
 		transactionRepository.save(transactionRecord);
 		
-		TransactionToPaymentContextMapper transactionToPaymentContextMapper = Mappers.getMapper(TransactionToPaymentContextMapper.class);
 		responsePaymentContext = transactionToPaymentContextMapper.mapTransactionToPaymentContext(transactionRecord);
 	}
 
 	@Override
 	public <T> T buildResponse() {
-		PaymentResponse response = Mappers.getMapper(PaymentContextToPaymentResponseMapper.class).mapPaymentContextToPaymentResponse(responsePaymentContext);
+		PaymentResponse response = paymentContextToPaymentResponseMapper.mapPaymentContextToPaymentResponse(responsePaymentContext);
 		response.setGetStatusUrl(PaymentConstants.SERVER_HOST_ADDRESS + responsePaymentContext.getPaymentId());
 		return (T) response;
 	}

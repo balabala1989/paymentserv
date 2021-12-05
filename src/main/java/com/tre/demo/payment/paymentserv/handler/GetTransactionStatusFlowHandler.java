@@ -32,6 +32,12 @@ public class GetTransactionStatusFlowHandler extends RequestFlowHandler {
 	@Autowired
 	TransactionDetailRepository transactionDetailRepository;
 	
+	@Autowired
+	TransactionToPaymentContextMapper transactionToPaymentContextMapper;
+	
+	@Autowired
+	PaymentContextToPaymentResponseMapper paymentContextToPaymentResponseMapper;
+	
 	private PaymentContext responsePaymentContext;
 	private List<TransactionDetails> transactionDetails;
 	private List<PaymentInstructionContext> responsePaymentInstructionContext;
@@ -43,14 +49,13 @@ public class GetTransactionStatusFlowHandler extends RequestFlowHandler {
 		PaymentContext requestPaymentContext = getPaymentContextList().get(0);
 		
 		Optional<Transaction> transaction = transactionRepository.findById(requestPaymentContext.getPaymentId());
-		TransactionToPaymentContextMapper transactionToPaymentContextMapper = Mappers.getMapper(TransactionToPaymentContextMapper.class);
 		
 		if (transaction.isPresent()) {
 			transactionDao = transaction.get();
 			transactionDetails = transactionDetailRepository.findTransactionDetailsByPaymentId(requestPaymentContext.getPaymentId());
 			responsePaymentContext = transactionToPaymentContextMapper.mapTransactionToPaymentContext(transactionDao);
 			
-			if (transactionDetails != null) {
+			if (transactionDetails != null && !transactionDetails.isEmpty()) {
 				responsePaymentInstructionContext = transactionToPaymentContextMapper.mapTransactionDetailsToPaymentContextList(transactionDetails);
 			}
 			
@@ -64,10 +69,10 @@ public class GetTransactionStatusFlowHandler extends RequestFlowHandler {
 	@Override
 	public <T> T buildResponse() {
 		
-		PaymentResponse paymentResponse = Mappers.getMapper(PaymentContextToPaymentResponseMapper.class).mapPaymentContextToPaymentResponse(responsePaymentContext);
+		PaymentResponse paymentResponse = paymentContextToPaymentResponseMapper.mapPaymentContextToPaymentResponse(responsePaymentContext);
 		TransactionResponse transactionResponse = new TransactionResponse();
 		transactionResponse.setPaymentResponse(paymentResponse);
-		transactionResponse.setInstructionStatus(Mappers.getMapper(PaymentContextToPaymentResponseMapper.class).mapInstructionContextToStatusList(responsePaymentInstructionContext));
+		transactionResponse.setInstructionStatus(paymentContextToPaymentResponseMapper.mapInstructionContextToStatusList(responsePaymentInstructionContext));
 		return (T) transactionResponse;
 		
 	}

@@ -39,12 +39,6 @@ public class PaymentsController {
 			MediaType.APPLICATION_JSON_VALUE })
 	public PaymentResponse completePayment(@Validated @RequestBody PaymentRequest request) {
 		
-		//Security Validation
-		//Request Validation
-		//Builder to context
-		//Call process to do all processing
-		//build response with and without exceptions
-		
 		List<PaymentContext> paymentContextList = contextBuiler.build(request);
 		
 		
