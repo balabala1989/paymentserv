@@ -2,8 +2,9 @@ package com.tre.demo.payment.paymentserv.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -22,13 +23,22 @@ import com.tre.demo.payment.paymentserv.mapper.UserToUserContextMapper;
 @Component
 @Scope("prototype")
 public class PaymentContextBuilder {
+	
+	@Autowired
+	UserToUserContextMapper userToUserContextMapper;
+	
+	@Autowired
+	PaymentInstructionToPaymentinstructionContextMapper paymentInstructionMapper;
+	
 
 	public List<PaymentContext> build(PaymentRequest request) {
 		
-		UserToUserContextMapper userToUserContextMapper = Mappers.getMapper(UserToUserContextMapper.class);
-		PaymentInstructionToPaymentinstructionContextMapper paymentInstructionMapper = Mappers.getMapper(PaymentInstructionToPaymentinstructionContextMapper.class);
 		List<PaymentContext> paymentContextList = new ArrayList<PaymentContext>();
 		
+		Optional<PaymentRequest> optional = Optional.ofNullable(request);
+		
+		if (optional.isEmpty())
+			return paymentContextList;
 		
 		for(PaymentInstruction instruction : request.getInstructions()) {
 			PaymentContext paymentContext = new PaymentContext();

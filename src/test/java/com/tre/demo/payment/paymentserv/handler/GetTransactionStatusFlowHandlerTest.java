@@ -1,13 +1,6 @@
 package com.tre.demo.payment.paymentserv.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.assertj.core.util.Arrays;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import java.util.ArrayList;
@@ -22,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.tre.demo.payment.paymentserv.context.CardPaymentContext;
 import com.tre.demo.payment.paymentserv.context.PaymentContext;
@@ -30,7 +22,6 @@ import com.tre.demo.payment.paymentserv.context.PaymentInstructionContext;
 import com.tre.demo.payment.paymentserv.context.PaymentMethodEnum;
 import com.tre.demo.payment.paymentserv.entity.Transaction;
 import com.tre.demo.payment.paymentserv.entity.TransactionDetails;
-import com.tre.demo.payment.paymentserv.exceptions.PaymentFailureException;
 import com.tre.demo.payment.paymentserv.exceptions.TransactionNotFoundException;
 import com.tre.demo.payment.paymentserv.mapper.PaymentContextToPaymentResponseMapper;
 import com.tre.demo.payment.paymentserv.mapper.TransactionToPaymentContextMapper;
