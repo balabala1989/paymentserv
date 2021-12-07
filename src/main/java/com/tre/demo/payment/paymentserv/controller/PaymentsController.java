@@ -22,7 +22,7 @@ import com.tre.demo.payment.paymentserv.handler.GetTransactionStatusFlowHandler;
 import com.tre.demo.payment.paymentserv.util.PaymentContextBuilder;
 
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/v1/payment")
 public class PaymentsController {
 	
 	@Autowired

@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 
 import com.tre.demo.payment.paymentserv.api.model.Error;
+import com.tre.demo.payment.paymentserv.exceptions.PaymentExceptionBuilder;
 import com.tre.demo.payment.paymentserv.exceptions.PaymentFailureException;
 import com.tre.demo.payment.paymentserv.exceptions.TransactionNotFoundException;
 

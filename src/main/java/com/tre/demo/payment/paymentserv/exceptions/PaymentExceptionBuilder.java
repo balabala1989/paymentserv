@@ -1,4 +1,4 @@
-package com.tre.demo.payment.paymentserv.util;
+package com.tre.demo.payment.paymentserv.exceptions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.tre.demo.payment.paymentserv.api.model.Error;
-import com.tre.demo.payment.paymentserv.exceptions.PaymentFailureException;
-import com.tre.demo.payment.paymentserv.exceptions.TransactionNotFoundException;
 
 @ControllerAdvice
 public class PaymentExceptionBuilder {
@@ -21,7 +19,7 @@ public class PaymentExceptionBuilder {
 			Error error = new Error();
 			error.setName("Payment Processing Failure");
 			error.setMessage(ex.getMessage());
-			return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(error, HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 		else if (ex instanceof TransactionNotFoundException) {
 			Error error = new Error();
